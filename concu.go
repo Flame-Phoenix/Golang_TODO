@@ -1,26 +1,33 @@
 package main
 
 import (
-    "fmt"
-    "time"
+	"fmt"
+	"sync"
+	"time"
 )
 
-func f(from string) {
-    for i := 0; i < 120; i++ {
-        fmt.Println(from, ":", i)
-    }
+func worker(id int) {
+	fmt.Printf("Worker %d starting\n", id)
+
+	time.Sleep(time.Second)
+	fmt.Printf("Worker %d done\n", id)
 }
 
 func main() {
 
-    f("direct")
+	var wg sync.WaitGroup
 
-    go f("goroutine")
+	for i := 1; i <= 5; i++ {
+		wg.Add(1)
 
-    go func(msg string) {
-        fmt.Println(msg)
-    }("going")
+		i := i
 
-    time.Sleep(time.Second)
-    fmt.Println("done")
+		go func() {
+			defer wg.Done()
+			worker(i)
+		}()
+	}
+
+	wg.Wait()
+	fmt.Printf("Program done\n")
 }
