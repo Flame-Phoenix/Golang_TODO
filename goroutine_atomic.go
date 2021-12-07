@@ -3,37 +3,30 @@ package main
 import (
 	"fmt"
 	"sync"
-	// "runtime"
+	"sync/atomic"
 )
 
-var counter = 0
-var mu sync.Mutex
-
-
+var counter int64
 func increment() {
-	// using mutex to fix the race condition
-	defer mu.Unlock()
-	mu.Lock()
-	counter++
 	// this printf shows the race condition
-	fmt.Println(counter)
 }
 
 func main() {
 
 	var wg sync.WaitGroup
-	gs :=100
+	gs := 100
 	wg.Add(gs)
 
 	for i := 0; i < gs; i++ {
 		go func() {
+			// atom is faster but its not doing it in syncronus order
+			atomic.AddInt64(&counter,1)
+			// that print shows that
+			fmt.Println(atomic.LoadInt64(&counter))
 			defer wg.Done()
-			// not make sense to use with mutex lock
-			// runtime.Gosched()
-			increment()
-			
 		}()
 	}
 	wg.Wait()
+	// the result is right tho
 	fmt.Printf("Counter is: %d\n", counter)
 }
