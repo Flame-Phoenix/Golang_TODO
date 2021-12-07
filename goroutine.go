@@ -3,16 +3,16 @@ package main
 import (
 	"fmt"
 	"sync"
-	"runtime"
+	// "runtime"
 )
 
 var counter = 0
 var mu sync.Mutex
 
-func increament() {
-	// mutex fix the race condition
+func increment() {
+	// using mutex to fix the race condition
+	defer mu.Unlock()
 	mu.Lock()
-    defer mu.Unlock()
 	counter++
 	// this printf shows the race condition
 	fmt.Println(counter)
@@ -28,8 +28,9 @@ func main() {
 
 		go func() {
 			defer wg.Done()
-			runtime.Gosched()
-			increament()
+			// not make sense to use with mutex lock
+			// runtime.Gosched()
+			increment()
 			
 		}()
 	}
