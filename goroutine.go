@@ -7,9 +7,15 @@ import (
 )
 
 var counter = 0
+var mu sync.Mutex
 
 func increament() {
+	// mutex fix the race condition
+	mu.Lock()
+    defer mu.Unlock()
 	counter++
+	// this printf shows the race condition
+	fmt.Println(counter)
 }
 
 func main() {
@@ -24,11 +30,9 @@ func main() {
 			defer wg.Done()
 			runtime.Gosched()
 			increament()
-			// this printf shows the race condition
-			fmt.Println(counter)
+			
 		}()
 	}
-	
 	wg.Wait()
 	fmt.Printf("Counter is: %d\n", counter)
 }
