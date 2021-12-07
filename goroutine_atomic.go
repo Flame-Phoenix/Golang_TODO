@@ -19,7 +19,7 @@ func main() {
 
 	for i := 0; i < gs; i++ {
 		go func() {
-			// atom is faster but its not doing it in syncronus order
+			// atomic it has better performance for preventing race condition but its not doing it in syncronus order
 			atomic.AddInt64(&counter,1)
 			// that print shows that
 			fmt.Println(atomic.LoadInt64(&counter))

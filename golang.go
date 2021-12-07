@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	"runtime"
 )
 
 func main() {
-	fmt.Println("Hello World")
+	// GOOS : operating system
+	// GOARCH : 
+	fmt.Println(runtime.GOOS,runtime.GOARCH)
 }
